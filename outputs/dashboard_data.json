@@ -1,0 +1,87 @@
+{
+  "kpis": {
+    "total_skus": 10000,
+    "avg_stock_qty": 50.6,
+    "dual_risk_count": 2530,
+    "capital_at_risk": 56718863.0,
+    "write_off_rate": 100.0
+  },
+  "risk_breakdown": {
+    "Critical": 2530,
+    "High": 0,
+    "Medium": 7470,
+    "Low": 0
+  },
+  "model_logistic": {
+    "AUC-ROC": 1.0,
+    "Precision": 1.0,
+    "Recall": 1.0,
+    "F1-Score": 1.0,
+    "Accuracy": 1.0
+  },
+  "model_rf": {
+    "AUC-ROC": 1.0,
+    "Precision": 1.0,
+    "Recall": 1.0,
+    "F1-Score": 1.0,
+    "Accuracy": 1.0
+  },
+  "feature_importance": [
+    {
+      "feature": "high_stock_flag",
+      "pct": 22.8
+    },
+    {
+      "feature": "Stock Quantity",
+      "pct": 21.3
+    },
+    {
+      "feature": "overhang_ratio",
+      "pct": 19.8
+    },
+    {
+      "feature": "risk_score",
+      "pct": 17.1
+    },
+    {
+      "feature": "stock_pressure",
+      "pct": 16.6
+    },
+    {
+      "feature": "financial_exposure",
+      "pct": 2.0
+    },
+    {
+      "feature": "Price",
+      "pct": 0.2
+    },
+    {
+      "feature": "price_tier_enc",
+      "pct": 0.1
+    },
+    {
+      "feature": "warranty_enc",
+      "pct": 0.0
+    },
+    {
+      "feature": "days_to_expiry",
+      "pct": 0.0
+    }
+  ],
+  "stock_distribution": {
+    "0\u201325": 2520,
+    "26\u201350": 2472,
+    "51\u201375": 2478,
+    "76\u201390": 1532,
+    "91\u2013100": 998
+  },
+  "expiry_distribution": {
+    "3\u20136 months": 3363,
+    ">1 year expired": 6637
+  },
+  "price_by_category": {
+    "Clothing": 251.79,
+    "Electronics": 253.43,
+    "Home Appliances": 258.84
+  }
+}

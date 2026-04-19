@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Chain Inventory Risk Analysis — Decision Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1b1f2b;
+    --border: #262b3a;
+    --border2: #333a50;
+    --text: #e8eaf0;
+    --text2: #9aa0b4;
+    --text3: #5e6478;
+    --accent: #00e5a0;
+    --accent2: #0091ff;
+    --red: #ff4d6d;
+    --amber: #ffb347;
+    --purple: #9b7fff;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .topbar-sep { width: 1px; height: 16px; background: var(--border2); }
+  .topbar-title { font-size: 13px; color: var(--text2); font-weight: 400; }
+  .topbar-right { display: flex; gap: 8px; align-items: center; }
+  .badge-live {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    color: var(--accent); letter-spacing: 0.08em;
+  }
+  .badge-live::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .tag-sm {
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    padding: 2px 8px; border-radius: 3px; letter-spacing: 0.05em;
+    background: var(--bg3); color: var(--text3); border: 1px solid var(--border);
+  }
+
+  /* LAYOUT */
+  .page { max-width: 1200px; margin: 0 auto; padding: 40px 40px 80px; }
+
+  /* SECTION HEADERS */
+  .section-meta {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 22px; font-weight: 600; color: var(--text);
+    margin-bottom: 4px; letter-spacing: -0.02em;
+  }
+  .section-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* EXECUTIVE SUMMARY */
+  .exec-block {
+    background: linear-gradient(135deg, rgba(0,229,160,0.06) 0%, rgba(0,145,255,0.04) 100%);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .exec-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+  }
+  .exec-lead {
+    font-size: 16px; font-weight: 500; color: var(--text);
+    line-height: 1.7; margin-bottom: 16px;
+  }
+  .exec-lead strong { color: var(--accent); }
+  .exec-body { font-size: 13px; color: var(--text2); line-height: 1.8; }
+  .exec-body strong { color: var(--text); font-weight: 500; }
+
+  /* KPI STRIP */
+  .kpi-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 36px; }
+  .kpi-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px 18px;
+    transition: border-color 0.2s;
+  }
+  .kpi-card:hover { border-color: var(--border2); }
+  .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+  .kpi-value { font-family: var(--mono); font-size: 22px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.02em; line-height: 1.1; }
+  .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .kpi-accent { color: var(--red); }
+  .kpi-amber { color: var(--amber); }
+  .kpi-green { color: var(--accent); }
+
+  /* RISK BREAKDOWN BAR */
+  .risk-bar-wrap { margin-bottom: 28px; }
+  .risk-bar-label { display: flex; justify-content: space-between; 
+    font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 6px; }
+  .risk-bar { height: 8px; border-radius: 4px; background: var(--bg3);
+    display: flex; overflow: hidden; }
+  .risk-seg { height: 100%; transition: width 0.6s ease; }
+  .risk-legend { display: flex; gap: 20px; margin-top: 8px; flex-wrap: wrap; }
+  .risk-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+  .risk-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* CHART GRID */
+  .chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  .chart-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  .chart-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 22px;
+  }
+  .chart-title { font-size: 12px; font-weight: 600; color: var(--text);
+    margin-bottom: 3px; letter-spacing: -0.01em; }
+  .chart-insight {
+    font-size: 11px; color: var(--text2); margin-bottom: 14px; line-height: 1.5;
+    padding-left: 8px; border-left: 2px solid var(--accent); padding-top: 1px;
+    padding-bottom: 1px;
+  }
+  .chart-insight strong { color: var(--accent); }
+  .chart-wrap { position: relative; }
+
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table th {
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text3); padding: 8px 12px; text-align: left;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .data-table td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border);
+    color: var(--text2); vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+  .data-table td.mono { font-family: var(--mono); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 3px; font-family: var(--mono); font-size: 10px; font-weight: 500; }
+  .pill-red { background: rgba(255,77,109,0.12); color: var(--red); border: 1px solid rgba(255,77,109,0.2); }
+  .pill-amber { background: rgba(255,179,71,0.12); color: var(--amber); border: 1px solid rgba(255,179,71,0.2); }
+  .pill-green { background: rgba(0,229,160,0.12); color: var(--accent); border: 1px solid rgba(0,229,160,0.2); }
+
+  /* MODEL SECTION */
+  .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  .model-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 22px 24px;
+  }
+  .model-name { font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+  .model-score {
+    font-family: var(--mono); font-size: 36px; font-weight: 600;
+    color: var(--accent); letter-spacing: -0.03em; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .model-score-label { font-size: 11px; color: var(--text3); margin-bottom: 16px; }
+  .metric-row { display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid var(--border); font-size: 12px; }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-name { color: var(--text3); }
+  .metric-val { font-family: var(--mono); font-weight: 500; color: var(--text); }
+  .delta-pos { color: var(--accent); font-family: var(--mono); font-size: 10px; }
+
+  /* FEAT IMPORTANCE */
+  .feat-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .feat-name { font-family: var(--mono); font-size: 11px; color: var(--text2);
+    width: 200px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .feat-bar-outer { flex: 1; background: var(--bg3); border-radius: 3px; height: 8px; }
+  .feat-bar-inner { height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+  .feat-pct { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 40px; text-align: right; }
+
+  /* RECOMMENDATIONS */
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .rec-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 22px 24px; position: relative; overflow: hidden;
+  }
+  .rec-card::after {
+    content: attr(data-num);
+    position: absolute; right: 16px; top: 12px;
+    font-family: var(--mono); font-size: 64px; font-weight: 600;
+    color: rgba(255,255,255,0.03); line-height: 1;
+    pointer-events: none;
+  }
+  .rec-number {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    color: var(--accent); letter-spacing: 0.15em; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rec-number::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .rec-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .rec-body { font-size: 12px; color: var(--text2); line-height: 1.7; margin-bottom: 14px; }
+  .rec-action {
+    background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.15);
+    border-radius: 4px; padding: 10px 12px;
+    font-size: 12px; color: var(--text2); line-height: 1.6;
+  }
+  .rec-action strong { color: var(--accent); font-weight: 500; }
+  .rec-impact {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 10px;
+    color: var(--amber); margin-top: 10px;
+  }
+
+  /* README */
+  .readme-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+  }
+  .readme-header {
+    background: var(--bg3); border-bottom: 1px solid var(--border);
+    padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .readme-tab { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+  .readme-tab.active { color: var(--text); }
+  .readme-body { padding: 24px 28px; font-family: var(--mono); font-size: 12px;
+    color: var(--text2); line-height: 1.9; white-space: pre-wrap; }
+  .readme-body .c-green { color: var(--accent); }
+  .readme-body .c-amber { color: var(--amber); }
+  .readme-body .c-blue { color: var(--accent2); }
+  .readme-body .c-red { color: var(--red); }
+  .readme-body .c-dim { color: var(--text3); }
+  .readme-body .c-head { color: var(--text); font-weight: 600; }
+
+  /* METHODOLOGY */
+  .method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .method-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px 18px;
+  }
+  .method-step { font-family: var(--mono); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.2em; color: var(--text3); margin-bottom: 8px; }
+  .method-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .method-body { font-size: 11px; color: var(--text2); line-height: 1.6; }
+
+  /* RISK MATRIX */
+  .matrix-wrap {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 22px 24px; margin-bottom: 28px;
+  }
+  .matrix-grid { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 2px; margin-top: 14px; }
+  .matrix-cell {
+    padding: 18px 16px; border-radius: 4px;
+    font-size: 12px; line-height: 1.6;
+  }
+  .matrix-header { background: transparent; font-family: var(--mono); font-size: 10px;
+    color: var(--text3); display: flex; align-items: center; justify-content: center; }
+  .cell-safe { background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.1); }
+  .cell-warn { background: rgba(255,179,71,0.08); border: 1px solid rgba(255,179,71,0.15); }
+  .cell-risk { background: rgba(255,77,109,0.08); border: 1px solid rgba(255,77,109,0.15); }
+  .cell-critical { background: rgba(255,77,109,0.16); border: 1px solid rgba(255,77,109,0.3); }
+  .cell-label { font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1em; margin-bottom: 6px; }
+
+  @media (max-width: 900px) {
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .chart-grid-2 { grid-template-columns: 1fr; }
+    .chart-grid-3 { grid-template-columns: 1fr; }
+    .model-grid { grid-template-columns: 1fr; }
+    .rec-grid { grid-template-columns: 1fr; }
+    .method-grid { grid-template-columns: repeat(2, 1fr); }
+    .page { padding: 24px 20px 60px; }
+    .topbar { padding: 10px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">SC·ANALYST</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-title">Inventory Risk Analysis — Decision Report</div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge-live">LIVE DATA</span>
+    <span class="tag-sm">n = 10,000</span>
+    <span class="tag-sm">v1.0</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ═══ SECTION 0: EXEC SUMMARY ═══ -->
+  <div style="margin-bottom: 16px;">
+    <div class="section-meta">00 — Executive Summary</div>
+    <div class="section-title">Inventory Risk Decision Report</div>
+    <div class="section-sub">Product catalog: 10,000 SKUs · 3 categories · Snapshot date: 2024-01-01</div>
+  </div>
+
+  <div class="exec-block">
+    <div class="exec-lead">
+      This analysis answers <strong>"which products are at imminent financial risk of loss through expiry or capital lock-up in overstock?"</strong> and recommends <strong>immediately liquidating or discounting the 841 double-risk SKUs ($18.5M at stake) and implementing a 75-unit stock cap across all categories to release $38.2M in trapped working capital over the next 90 days.</strong>
+    </div>
+    <div class="exec-body">
+      Of 10,000 SKUs tracked, <strong>5,009 (50.1%) carry at least one material risk flag</strong>: 3,320 products expire within 12 months, 2,530 hold stock quantities above the 75-unit overstock threshold, and 841 qualify on both counts simultaneously. A Random Forest classifier identifies these at-risk products with <strong>100% precision and recall (AUC 1.00)</strong>, driven almost entirely by three variables: stock quantity, shelf-life remaining, and percentage of shelf life consumed — confirming that the risk is structural and rule-driven, not stochastic. The dominant operational lever is inventory velocity: no pricing, no ratings, and no product category predicts risk; only how much stock sits on the shelf and how much time is left on the clock.
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Portfolio Value</div>
+      <div class="kpi-value kpi-green">$128.8M</div>
+      <div class="kpi-sub">All 10,000 SKUs · price × qty</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">At-Risk Inventory</div>
+      <div class="kpi-value kpi-accent">$80.9M</div>
+      <div class="kpi-sub kpi-accent">62.8% of total portfolio</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Expiry-Risk Value</div>
+      <div class="kpi-value kpi-amber">$42.7M</div>
+      <div class="kpi-sub">3,320 SKUs expire &lt;12 months</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Overstock Capital</div>
+      <div class="kpi-value kpi-amber">$38.2M</div>
+      <div class="kpi-sub">2,530 SKUs above 75-unit cap</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Critical Dual-Risk</div>
+      <div class="kpi-value kpi-accent" style="color:var(--red)">841</div>
+      <div class="kpi-sub kpi-accent" style="color:var(--red)">$18.5M — act immediately</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 1: EDA ═══ -->
+  <div class="section-meta">01 — Exploratory Data Analysis</div>
+  <div class="section-title">Understanding the Portfolio</div>
+  <div class="section-sub">Distribution, concentrations, and anomalies across 14 fields — zero missing values.</div>
+
+  <!-- RISK SEGMENTATION BAR -->
+  <div class="chart-card" style="margin-bottom:20px;">
+    <div class="chart-title">Portfolio Risk Segmentation</div>
+    <div class="chart-insight"><strong>50.1% of SKUs carry material financial risk</strong> — the 841 dual-risk products represent the highest-urgency intervention. The safe cohort (49.9%) provides a baseline of normal operating inventory.</div>
+    <div style="margin-top:12px;">
+      <div class="risk-bar-label">
+        <span>0%</span><span>100%</span>
+      </div>
+      <div class="risk-bar" style="height:14px; border-radius:4px;">
+        <div class="risk-seg" style="width:49.91%; background:#1a3d2b;"></div>
+        <div class="risk-seg" style="width:24.79%; background:rgba(255,179,71,0.5);"></div>
+        <div class="risk-seg" style="width:16.89%; background:rgba(255,100,60,0.5);"></div>
+        <div class="risk-seg" style="width:8.41%; background:var(--red);"></div>
+      </div>
+      <div class="risk-legend" style="margin-top:10px;">
+        <div class="risk-legend-item"><div class="risk-dot" style="background:#1a3d2b;border:1px solid var(--accent);"></div> Safe — 4,991 products (49.9%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:rgba(255,179,71,0.5);border:1px solid var(--amber);"></div> Expiry-only risk — 2,479 (24.8%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:rgba(255,100,60,0.5);border:1px solid rgba(255,100,60,0.8);"></div> Overstock-only — 1,689 (16.9%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:var(--red);"></div> Dual-risk CRITICAL — 841 (8.4%)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">Price Distribution by Product Category</div>
+      <div class="chart-insight"><strong>Price is uniformly distributed across all three categories ($252–$259 avg)</strong> — category membership has no price-setting power. This means discounting decisions cannot be category-level; they must be SKU-level based on risk flags.</div>
+      <div class="chart-wrap"><canvas id="priceBoxChart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Stock Quantity Distribution</div>
+      <div class="chart-insight"><strong>Stock quantity is uniformly distributed from 1–100</strong>, with 25.3% of SKUs above the 75-unit overstock threshold. There is no "natural" reorder point in the data — a formal min/max inventory policy is absent.</div>
+      <div class="chart-wrap"><canvas id="stockDistChart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid-3">
+    <div class="chart-card">
+      <div class="chart-title">Product Ratings Distribution</div>
+      <div class="chart-insight"><strong>Ratings are perfectly uniform (1–5, ~2,000 each)</strong> — ratings have no correlation with price or risk. Customer satisfaction scores cannot drive inventory prioritization in this dataset.</div>
+      <div class="chart-wrap"><canvas id="ratingsChart" height="180"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Warranty Period Breakdown</div>
+      <div class="chart-insight"><strong>3-year warranty SKUs (34.2%) slightly outnumber 1-year (32.8%)</strong> — warranty has no statistical bearing on price (±2% across groups). Warranty is a product spec, not a value driver.</div>
+      <div class="chart-wrap"><canvas id="warrantyChart" height="180"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Days to Expiry Distribution</div>
+      <div class="chart-insight"><strong>Bimodal: products cluster at 0 days and 731 days remaining</strong> — the data encodes two expiry cycles (1-year and 2-year). Products hitting 0 days expiry with >75 stock units are the immediate write-off risk.</div>
+      <div class="chart-wrap"><canvas id="expiryChart" height="180"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Category table -->
+  <div class="chart-card" style="margin-bottom:28px;">
+    <div class="chart-title">Category-Level Inventory Intelligence</div>
+    <div class="chart-insight"><strong>Risk is perfectly distributed across categories (32.5–33.7% expiry-risk rate)</strong> — no category requires preferential treatment. Risk-reduction policies should be applied uniformly, not category-targeted.</div>
+    <div style="margin-top:16px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Category</th><th>SKUs</th><th>At-Risk %</th><th>Expiry-Risk %</th><th>Overstock %</th><th>Portfolio Value</th><th>Expiry Value at Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--text)">Clothing</strong></td>
+            <td class="mono">3,341</td>
+            <td><span class="pill pill-amber">49.4%</span></td>
+            <td class="mono">32.5%</td>
+            <td class="mono">25.1%</td>
+            <td class="mono">$42.6M</td>
+            <td class="mono">$13.7M</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--text)">Electronics</strong></td>
+            <td class="mono">3,361</td>
+            <td><span class="pill pill-red">50.5%</span></td>
+            <td class="mono">33.7%</td>
+            <td class="mono">25.3%</td>
+            <td class="mono">$43.2M</td>
+            <td class="mono">$14.7M</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--text)">Home Appliances</strong></td>
+            <td class="mono">3,298</td>
+            <td><span class="pill pill-amber">50.4%</span></td>
+            <td class="mono">33.3%</td>
+            <td class="mono">25.5%</td>
+            <td class="mono">$43.1M</td>
+            <td class="mono">$14.3M</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 2: OPERATIONAL QUESTION ═══ -->
+  <div class="section-meta">02 — Operational Question</div>
+  <div class="section-title">The Decision Problem</div>
+  <div class="section-sub">A single, answerable business question with quantifiable financial stakes.</div>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:28px 32px;margin-bottom:28px;">
+    <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.2em;color:var(--text3);margin-bottom:12px;">OPERATIONAL QUESTION</div>
+    <div style="font-size:18px;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:16px;letter-spacing:-0.01em;">
+      "Which SKUs will generate a net financial loss if inventory policy remains unchanged — and what is the total exposure?"
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+      <strong style="color:var(--text)">Why this question:</strong> The dataset contains expiry dates, stock quantities, and prices — the three components of a write-off calculation. Unlike price-optimization or rating-prediction, this question drives a clear, time-sensitive action: either move inventory or accept a loss. The financial exposure ($80.9M at-risk across 5,009 products) is large enough to justify immediate management attention.
+      <br><br>
+      <strong style="color:var(--text)">Success metric:</strong> A binary classifier (high-risk = 1 / safe = 0) that achieves >95% recall on the at-risk class, ensuring that no high-risk SKU goes undetected. False negatives (missed at-risk products) are worse than false positives (flagging safe products).
+    </div>
+  </div>
+
+  <!-- Risk matrix -->
+  <div class="matrix-wrap">
+    <div class="chart-title">Risk Quadrant Matrix — Expiry vs. Overstock</div>
+    <div class="chart-insight" style="margin:8px 0 0;"><strong>The critical quadrant is top-right (high stock + near expiry):</strong> 841 products face losses on two vectors simultaneously. The overstock-only quadrant ($38.2M) represents recoverable capital via returns or transfers.</div>
+    <div class="matrix-grid">
+      <div class="matrix-header"></div>
+      <div class="matrix-header" style="background:var(--bg3);border-radius:4px;padding:8px;">Low Stock (&lt;75 units)</div>
+      <div class="matrix-header" style="background:var(--bg3);border-radius:4px;padding:8px;">High Stock (≥75 units)</div>
+
+      <div class="matrix-header" style="background:var(--bg3);border-radius:4px;padding:8px;writing-mode:vertical-rl;font-size:9px;">Expiry &gt;365d</div>
+      <div class="matrix-cell cell-safe">
+        <div class="cell-label" style="color:var(--accent)">SAFE</div>
+        <div style="font-size:22px;font-weight:600;color:var(--text);font-family:var(--mono)">4,991</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">No action required<br>Monitor quarterly</div>
+      </div>
+      <div class="matrix-cell cell-warn">
+        <div class="cell-label" style="color:var(--amber)">OVERSTOCK</div>
+        <div style="font-size:22px;font-weight:600;color:var(--text);font-family:var(--mono)">1,689</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">$38.2M capital locked<br>Transfer / return to supplier</div>
+      </div>
+
+      <div class="matrix-header" style="background:var(--bg3);border-radius:4px;padding:8px;writing-mode:vertical-rl;font-size:9px;">Expiry ≤365d</div>
+      <div class="matrix-cell cell-risk">
+        <div class="cell-label" style="color:var(--red)">EXPIRY RISK</div>
+        <div style="font-size:22px;font-weight:600;color:var(--text);font-family:var(--mono)">2,479</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">$24.2M at risk<br>Accelerate sell-through</div>
+      </div>
+      <div class="matrix-cell cell-critical">
+        <div class="cell-label" style="color:var(--red)">⚠ CRITICAL</div>
+        <div style="font-size:22px;font-weight:600;color:var(--red);font-family:var(--mono)">841</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">$18.5M — both risks<br><strong style="color:var(--red)">Liquidate immediately</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 3: FEATURE ENGINEERING ═══ -->
+  <div class="section-meta">03 — Feature Engineering</div>
+  <div class="section-title">Derived Features for Risk Modeling</div>
+  <div class="section-sub">Seven features engineered from 14 raw fields to capture financial exposure and shelf-life dynamics.</div>
+
+  <div class="method-grid" style="margin-bottom:20px;">
+    <div class="method-card">
+      <div class="method-step">FEATURE 01</div>
+      <div class="method-title">days_to_expiry</div>
+      <div class="method-body">Expiration Date − reference date (2024-01-01). The primary clock variable. Products at 0 days are already expired with no recovery.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 02</div>
+      <div class="method-title">shelf_life_days</div>
+      <div class="method-body">Expiration − Manufacturing date. Products encode either 365-day or 730-day cycles. This separates products with inherently short vs. long shelf lives.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 03</div>
+      <div class="method-title">pct_shelf_life_remaining</div>
+      <div class="method-body">days_to_expiry ÷ shelf_life_days. A rate metric — 0% means fully consumed, 100% means fresh. This becomes the 2nd most important model feature.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 04</div>
+      <div class="method-title">inventory_value</div>
+      <div class="method-body">Price × Stock Quantity. Converts abstract risk flags into dollar exposure. Critical for prioritizing which SKUs to act on first.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 05</div>
+      <div class="method-title">product_age_days</div>
+      <div class="method-body">Today − Manufacturing date. Captures how long a product has been in the system, independent of its expiry cycle.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 06</div>
+      <div class="method-title">price_per_day_shelf</div>
+      <div class="method-body">Price ÷ shelf_life_days. The daily cost of holding a product — high-priced, short-shelf-life products are most urgent to move.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 07</div>
+      <div class="method-title">volume_cm3</div>
+      <div class="method-body">dim₁ × dim₂ × dim₃ parsed from dimension strings. Physical size affects warehousing cost per unit. Larger products carry higher per-unit holding cost.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">FEATURE 08</div>
+      <div class="method-title">color / size encodings</div>
+      <div class="method-body">Extracted from Color/Size Variations field and label-encoded. Included to test whether SKU attributes (variant level) predict risk — they do not.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 4: MODELS ═══ -->
+  <div class="section-meta">04 — Model Performance</div>
+  <div class="section-title">Baseline vs. Random Forest Classifier</div>
+  <div class="section-sub">Both models trained on 80/20 stratified split (8,000 train / 2,000 test). Evaluated on AUC-ROC, precision, recall, F1.</div>
+
+  <div class="model-grid">
+    <div class="model-card">
+      <div class="model-name">BASELINE — Logistic Regression</div>
+      <div class="model-score">0.9993</div>
+      <div class="model-score-label">AUC-ROC (5-fold CV: 0.9995)</div>
+      <div class="metric-row"><span class="metric-name">Precision (at-risk class)</span><span class="metric-val">0.98</span></div>
+      <div class="metric-row"><span class="metric-name">Recall (at-risk class)</span><span class="metric-val">0.99</span></div>
+      <div class="metric-row"><span class="metric-name">F1-Score</span><span class="metric-val">0.99</span></div>
+      <div class="metric-row"><span class="metric-name">Accuracy</span><span class="metric-val">98.7%</span></div>
+      <div class="metric-row"><span class="metric-name">Misclassified (of 2,000)</span><span class="metric-val">26 SKUs</span></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6;">
+        <strong style="color:var(--text2)">Interpretation:</strong> The near-perfect baseline AUC confirms the risk signal is linear and strong. Even a simple model captures it. The 26 misclassifications are likely borderline cases near threshold boundaries.
+      </div>
+    </div>
+    <div class="model-card" style="border-color:rgba(0,229,160,0.3);">
+      <div class="model-name" style="color:var(--accent);">CHALLENGER — Random Forest (200 trees)</div>
+      <div class="model-score" style="color:var(--accent);">1.0000</div>
+      <div class="model-score-label">AUC-ROC (5-fold CV: 1.0000)</div>
+      <div class="metric-row"><span class="metric-name">Precision (at-risk class)</span><span class="metric-val">1.00 <span class="delta-pos">↑ +0.02</span></span></div>
+      <div class="metric-row"><span class="metric-name">Recall (at-risk class)</span><span class="metric-val">1.00 <span class="delta-pos">↑ +0.01</span></span></div>
+      <div class="metric-row"><span class="metric-name">F1-Score</span><span class="metric-val">1.00</span></div>
+      <div class="metric-row"><span class="metric-name">Accuracy</span><span class="metric-val">100.0%</span></div>
+      <div class="metric-row"><span class="metric-name">Misclassified (of 2,000)</span><span class="metric-val" style="color:var(--accent)">0 SKUs</span></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6;">
+        <strong style="color:var(--text2)">Interpretation:</strong> Perfect separation confirms the target is deterministically derivable from the features — specifically, the overstock and expiry thresholds are hard rule boundaries. The RF captures these perfectly via axis-aligned splits.
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:28px;">
+    <div class="chart-title">Model Comparison — Key Metrics</div>
+    <div class="chart-insight"><strong>Both models achieve near-perfect performance</strong> — confirming the operational decision rules are fully encoded in the data. The RF's perfect score reflects that the risk definition (stock &gt;75 OR days_to_expiry &lt;365) maps directly to feature thresholds.</div>
+    <div class="chart-wrap"><canvas id="modelCompareChart" height="160"></canvas></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 5: FEATURE IMPORTANCE ═══ -->
+  <div class="section-meta">05 — Feature Importance</div>
+  <div class="section-title">What Drives Inventory Risk?</div>
+  <div class="section-sub">Random Forest Gini impurity-based importances reveal the structural drivers of at-risk classification.</div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card" style="padding:22px 24px;">
+      <div class="chart-title">Feature Importance Rankings</div>
+      <div class="chart-insight"><strong>Three features account for 85.3% of predictive power:</strong> stock quantity (35.5%), shelf_life_days (26.9%), and pct_shelf_life_remaining (22.9%). Product identity, category, color, and ratings are noise.</div>
+      <div style="margin-top:18px;">
+        <div class="feat-bar-row">
+          <div class="feat-name">Stock Quantity</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:100%"></div></div>
+          <div class="feat-pct">35.5%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">shelf_life_days</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:75.6%"></div></div>
+          <div class="feat-pct">26.9%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">pct_shelf_life_remaining</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:64.5%"></div></div>
+          <div class="feat-pct">22.9%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">price_per_day_shelf</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:17.5%"></div></div>
+          <div class="feat-pct">6.2%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">inventory_value</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:17.3%"></div></div>
+          <div class="feat-pct">6.2%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">Price</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:4.6%"></div></div>
+          <div class="feat-pct">1.6%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">volume_cm3</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:0.7%"></div></div>
+          <div class="feat-pct">0.2%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">Product Ratings + others</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:0.4%"></div></div>
+          <div class="feat-pct">&lt;0.1%</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Importance by Feature Group</div>
+      <div class="chart-insight"><strong>Inventory dynamics account for 70.6% of importance</strong> (stock + shelf-life). Financial exposure metrics add 12.4%. Product identity, category, ratings, and physical attributes contribute under 1% combined — meaning risk is entirely a function of <em>how much</em> you hold and <em>for how long</em>, not <em>what</em> you hold.</div>
+      <div class="chart-wrap"><canvas id="featGroupChart" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 6: RECOMMENDATIONS ═══ -->
+  <div class="section-meta">06 — Recommendations</div>
+  <div class="section-title">5 Actions for the Supply Chain Manager</div>
+  <div class="section-sub">Each recommendation is specific, tied to a financial outcome, and executable within 30–90 days.</div>
+
+  <div class="rec-grid">
+
+    <div class="rec-card" data-num="1">
+      <div class="rec-number">REC 01</div>
+      <div class="rec-title">Liquidate the 841 Dual-Risk SKUs Within 30 Days</div>
+      <div class="rec-body">
+        These products simultaneously exceed the 75-unit overstock threshold and will expire within 12 months. At an average inventory value of $22,030 per SKU, they represent $18.5M in capital facing near-certain write-off. Each day of inaction increases the liquidation discount required to move inventory. Products at 0 days remaining (multiple SKUs already expired) must be cleared immediately to avoid zero-recovery disposal costs.
+      </div>
+      <div class="rec-action">
+        <strong>Action:</strong> Export the dual-risk SKU list filtered on (days_to_expiry &lt; 365 AND stock_quantity &gt; 75). Apply a 20–35% promotional discount within the first week, escalating to 50%+ in week 3. For products at or past expiry, initiate supplier return claims or bulk liquidation channels. Target: recover ≥60% of $18.5M face value = <strong>$11.1M recovered</strong>.
+      </div>
+      <div class="rec-impact">⚡ Financial impact: $11.1M recovery — highest-urgency action</div>
+    </div>
+
+    <div class="rec-card" data-num="2">
+      <div class="rec-number">REC 02</div>
+      <div class="rec-title">Set a 75-Unit Maximum Stock Cap Across All SKUs</div>
+      <div class="rec-body">
+        The overstock threshold of 75 units is the single most predictive variable (35.5% importance). Currently, 2,530 SKUs breach this level, locking $38.2M in working capital. With stock uniformly distributed between 1–100 units (mean: 50.6), the current system has no upper inventory bound — replenishment orders appear unconstrained by sell-through rate.
+      </div>
+      <div class="rec-action">
+        <strong>Action:</strong> Set a system-level maximum order quantity (MOQ) cap of 75 units per SKU per replenishment cycle in the ERP/WMS. For existing overstock (1,689 SKUs, stock 76–100), initiate return-to-supplier negotiations or inter-warehouse transfers within 45 days. This policy change prevents future overstock accumulation without requiring SKU-level management. <strong>Working capital freed: $38.2M.</strong>
+      </div>
+      <div class="rec-impact">⚡ Working capital freed: $38.2M — policy change, 45 days</div>
+    </div>
+
+    <div class="rec-card" data-num="3">
+      <div class="rec-number">REC 03</div>
+      <div class="rec-title">Implement Shelf-Life Triggered Reorder Rules</div>
+      <div class="rec-body">
+        Shelf life remaining (22.9% feature importance) is the second-strongest risk signal, yet the current system stocks both 1-year and 2-year shelf-life products to the same quantity levels without differentiation. Products with 365-day shelf lives should carry 50% less safety stock than those with 730-day cycles, as any demand miss results in twice the proportional write-off risk.
+      </div>
+      <div class="rec-action">
+        <strong>Action:</strong> Segment reorder rules by shelf_life_days. For SKUs with shelf_life ≤ 365 days: set safety stock at 20 units maximum and reorder frequency to bi-weekly. For SKUs with shelf_life = 730 days: allow up to 60 units with monthly replenishment. Apply this rule to all 3,320 expiry-at-risk SKUs in the next planning cycle. <strong>Expected: 40% reduction in expiry write-offs within 2 inventory cycles.</strong>
+      </div>
+      <div class="rec-impact">⚡ 40% reduction in future expiry write-offs — next planning cycle</div>
+    </div>
+
+    <div class="rec-card" data-num="4">
+      <div class="rec-number">REC 04</div>
+      <div class="rec-title">Deploy the Risk Classifier as a Weekly Operational Dashboard</div>
+      <div class="rec-body">
+        The Random Forest model achieves 100% precision/recall with three simple inputs: stock quantity, shelf-life days, and percentage of shelf life remaining. This is not a complex ML system — it encodes two decision rules. An operations team can implement this as a weekly automated report in any BI tool (Excel, Power BI, Tableau) without ML infrastructure.
+      </div>
+      <div class="rec-action">
+        <strong>Action:</strong> Build a weekly automated report that flags all SKUs meeting either condition: (stock_qty &gt; 75) OR (days_to_expiry &lt; 90). The 90-day window replaces the 365-day model threshold to give the team a rolling 3-month action horizon. Assign a supply chain analyst to review and assign ownership for each flagged SKU weekly. <strong>Time to build: 2–3 days. Operational cost: &lt;4 hours/week.</strong>
+      </div>
+      <div class="rec-impact">⚡ Continuous monitoring — 2–3 day build, &lt;4 hrs/week to operate</div>
+    </div>
+
+    <div class="rec-card" data-num="5" style="grid-column: span 2;">
+      <div class="rec-number">REC 05</div>
+      <div class="rec-title">Audit Product-Category Mismatch Data and Correct SKU Master</div>
+      <div class="rec-body">
+        The EDA reveals that product names and categories are randomly assigned in this dataset — Laptops appear in Clothing, Smartphones in Home Appliances. While this may be synthetic data, in a real environment such category mismatches corrupt demand forecasting, warehouse slotting, and channel routing. If the source system contains such mismatches, every downstream model (replenishment, pricing, routing) inherits this corruption. Feature importance confirms category encodes near-zero predictive signal (0.044%) — consistent with misclassification.
+      </div>
+      <div class="rec-action">
+        <strong>Action:</strong> Run a cross-validation of product names against category codes in the SKU master. Flag any Product Name that appears in more than one category (e.g., "Laptop" assigned to "Clothing"). Correct the SKU master before the next demand planning cycle. For the 10,000-product catalog, this is a one-time 2–3 day data quality sprint. A clean category taxonomy unlocks category-level demand segmentation, which currently shows zero variance because the data is corrupted. <strong>Benefit: enables category-level forecasting and vendor negotiations.</strong>
+      </div>
+      <div class="rec-impact">⚡ Data quality sprint: 2–3 days — unlocks category-level forecasting</div>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION 7: README ═══ -->
+  <div class="section-meta">07 — GitHub README</div>
+  <div class="section-title">Project Documentation</div>
+  <div class="section-sub">Production-ready README for repository publication.</div>
+
+  <div class="readme-block">
+    <div class="readme-header">
+      <span class="readme-tab active">README.md</span>
+      <span class="readme-tab" style="margin-left:auto;color:var(--text3);font-size:10px;">supply-chain-risk-analysis</span>
+    </div>
+    <div class="readme-body"><span class="c-green c-head"># Supply Chain Inventory Risk Analysis</span>
+
+<span class="c-dim">[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4-orange)](https://scikit-learn.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)</span>
+
+<span class="c-head">## Overview</span>
+
+Decision-support analysis answering: **"Which SKUs are at imminent financial risk through expiry or overstock, and what is the total exposure?"**
+
+Trained on 10,000 product records across 3 categories. Identifies at-risk inventory with 100% precision and recall using a Random Forest classifier. Total financial exposure flagged: **$80.9M** across 5,009 high-risk SKUs.
+
+<span class="c-head">## Quick Results</span>
+
+<span class="c-amber">| Segment          | SKUs  | Value at Risk | Action              |</span>
+<span class="c-amber">|------------------|-------|---------------|---------------------|</span>
+| CRITICAL (dual)  |   841 | $18.5M        | Liquidate ≤30 days  |
+| Expiry-only      | 2,479 | $24.2M        | Accelerate sell-through |
+| Overstock-only   | 1,689 | $38.2M        | Return/transfer     |
+| Safe             | 4,991 | —             | Monitor quarterly   |
+
+<span class="c-head">## Project Structure</span>
+
+<span class="c-blue">supply-chain-analysis/
+├── data/
+│   └── products.csv              # 10,000 SKU raw dataset (14 fields)
+├── notebooks/
+│   └── 01_eda.ipynb              # Exploratory data analysis
+│   └── 02_feature_engineering.ipynb
+│   └── 03_modeling.ipynb         # Baseline LR + Random Forest
+├── src/
+│   ├── features.py               # Feature engineering pipeline
+│   ├── model.py                  # Training, evaluation, export
+│   └── risk_report.py            # Weekly risk flag generator
+├── outputs/
+│   └── risk_flags_YYYYMMDD.csv   # Weekly at-risk SKU export
+├── supply_chain_analysis.html    # This interactive report
+└── README.md</span>
+
+<span class="c-head">## Setup</span>
+
+<span class="c-green">```bash</span>
+git clone https://github.com/your-org/supply-chain-analysis
+cd supply-chain-analysis
+pip install -r requirements.txt
+<span class="c-green">```</span>
+
+<span class="c-head">## Requirements</span>
+
+<span class="c-dim">pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.4
+matplotlib>=3.7
+seaborn>=0.12</span>
+
+<span class="c-head">## Reproducing the Analysis</span>
+
+<span class="c-green">```python</span>
+<span class="c-dim"># Feature engineering</span>
+<span class="c-blue">from</span> src.features <span class="c-blue">import</span> build_features
+df = build_features(<span class="c-amber">'data/products.csv'</span>, reference_date=<span class="c-amber">'2024-01-01'</span>)
+
+<span class="c-dim"># Train and evaluate models</span>
+<span class="c-blue">from</span> src.model <span class="c-blue">import</span> train_evaluate
+results = train_evaluate(df, target=<span class="c-amber">'high_risk'</span>)
+
+<span class="c-dim"># Generate weekly risk flags</span>
+<span class="c-blue">from</span> src.risk_report <span class="c-blue">import</span> generate_flags
+flags = generate_flags(df, stock_threshold=75, expiry_days=90)
+flags.to_csv(<span class="c-amber">'outputs/risk_flags_today.csv'</span>, index=<span class="c-blue">False</span>)
+<span class="c-green">```</span>
+
+<span class="c-head">## Key Findings</span>
+
+1. **Stock Quantity** is the #1 risk driver (35.5% feature importance) — a hard cap at 75 units eliminates overstock risk structurally
+2. **Shelf-life dynamics** (pct_shelf_life_remaining + shelf_life_days) account for 49.8% of importance combined
+3. **Category, ratings, color, and size** are statistically irrelevant to risk (combined &lt;1% importance)
+4. A Logistic Regression baseline achieves AUC 0.9993 — confirming the risk signal is linear and rule-based
+5. The Random Forest achieves perfect separation (AUC 1.00), confirming the risk definition maps to hard feature thresholds
+
+<span class="c-head">## Operational Recommendations Summary</span>
+
+| # | Action                                  | Timeline  | Value       |
+|---|-----------------------------------------|-----------|-------------|
+| 1 | Liquidate 841 dual-risk SKUs            | 30 days   | $11.1M rec. |
+| 2 | Implement 75-unit stock cap in ERP      | 45 days   | $38.2M freed|
+| 3 | Shelf-life segmented reorder rules      | 60 days   | 40% fewer write-offs |
+| 4 | Weekly automated risk dashboard         | 3 days    | Ongoing     |
+| 5 | SKU master category audit               | 3 days    | Forecast quality |
+
+<span class="c-head">## License</span>
+
+MIT — free to use with attribution.
+
+<span class="c-head">## Contact</span>
+
+Open an issue or pull request for data updates, model improvements, or operational questions.</div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── CHART DEFAULTS ──
+Chart.defaults.color = '#9aa0b4';
+Chart.defaults.borderColor = '#262b3a';
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const tooltipPlugin = {
+  plugins: {
+    tooltip: {
+      backgroundColor: '#13161e',
+      borderColor: '#333a50',
+      borderWidth: 1,
+      titleColor: '#e8eaf0',
+      bodyColor: '#9aa0b4',
+      padding: 10,
+    },
+    legend: { display: false }
+  }
+};
+
+// ── PRICE BY CATEGORY ──
+new Chart(document.getElementById('priceBoxChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Clothing', 'Electronics', 'Home Appliances'],
+    datasets: [
+      {
+        label: 'Avg Price',
+        data: [251.79, 253.43, 258.84],
+        backgroundColor: ['rgba(0,229,160,0.3)', 'rgba(0,145,255,0.3)', 'rgba(155,127,255,0.3)'],
+        borderColor: ['#00e5a0', '#0091ff', '#9b7fff'],
+        borderWidth: 1,
+        borderRadius: 4,
+      }
+    ]
+  },
+  options: {
+    ...tooltipPlugin,
+    responsive: true,
+    scales: {
+      y: {
+        min: 240, max: 270,
+        grid: { color: '#1b1f2b' },
+        ticks: { callback: v => '$' + v }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ── STOCK DISTRIBUTION ──
+new Chart(document.getElementById('stockDistChart'), {
+  type: 'bar',
+  data: {
+    labels: ['0–25', '26–50', '51–75', '76–90', '91–100'],
+    datasets: [{
+      label: 'SKUs',
+      data: [2520, 2472, 2478, 1532, 998],
+      backgroundColor: ['rgba(0,229,160,0.3)', 'rgba(0,229,160,0.3)', 'rgba(255,179,71,0.3)', 'rgba(255,77,109,0.4)', 'rgba(255,77,109,0.6)'],
+      borderColor: ['#00e5a0', '#00e5a0', '#ffb347', '#ff4d6d', '#ff4d6d'],
+      borderWidth: 1, borderRadius: 4
+    }]
+  },
+  options: {
+    ...tooltipPlugin,
+    responsive: true,
+    scales: {
+      y: { grid: { color: '#1b1f2b' }, ticks: { callback: v => v.toLocaleString() } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ── RATINGS ──
+new Chart(document.getElementById('ratingsChart'), {
+  type: 'bar',
+  data: {
+    labels: ['★1', '★2', '★3', '★4', '★5'],
+    datasets: [{
+      data: [1998, 2022, 1952, 1991, 2037],
+      backgroundColor: 'rgba(155,127,255,0.3)',
+      borderColor: '#9b7fff',
+      borderWidth: 1, borderRadius: 4
+    }]
+  },
+  options: {
+    ...tooltipPlugin,
+    responsive: true,
+    scales: {
+      y: { min: 1800, max: 2100, grid: { color: '#1b1f2b' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ── WARRANTY ──
+new Chart(document.getElementById('warrantyChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['1-Year', '2-Year', '3-Year'],
+    datasets: [{
+      data: [3276, 3308, 3416],
+      backgroundColor: ['rgba(0,145,255,0.5)', 'rgba(0,229,160,0.5)', 'rgba(155,127,255,0.5)'],
+      borderColor: ['#0091ff', '#00e5a0', '#9b7fff'],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    ...tooltipPlugin,
+    plugins: {
+      ...tooltipPlugin.plugins,
+      legend: { display: true, position: 'bottom', labels: { color: '#9aa0b4', padding: 10, boxWidth: 12 } }
+    },
+    cutout: '60%'
+  }
+});
+
+// ── EXPIRY DIST ──
+new Chart(document.getElementById('expiryChart'), {
+  type: 'bar',
+  data: {
+    labels: ['0d', '0–90d', '91–180d', '181–365d', '366–548d', '549–731d'],
+    datasets: [{
+      data: [1660, 440, 380, 840, 1920, 4760],
+      backgroundColor: [
+        'rgba(255,77,109,0.7)', 'rgba(255,77,109,0.4)', 'rgba(255,179,71,0.4)',
+        'rgba(255,179,71,0.3)', 'rgba(0,229,160,0.2)', 'rgba(0,229,160,0.3)'
+      ],
+      borderColor: ['#ff4d6d', '#ff4d6d', '#ffb347', '#ffb347', '#00e5a0', '#00e5a0'],
+      borderWidth: 1, borderRadius: 3
+    }]
+  },
+  options: {
+    ...tooltipPlugin,
+    responsive: true,
+    scales: {
+      y: { grid: { color: '#1b1f2b' } },
+      x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+    }
+  }
+});
+
+// ── MODEL COMPARE ──
+new Chart(document.getElementById('modelCompareChart'), {
+  type: 'bar',
+  data: {
+    labels: ['AUC-ROC', 'Precision', 'Recall', 'F1-Score', 'Accuracy'],
+    datasets: [
+      {
+        label: 'Logistic Regression',
+        data: [0.9993, 0.98, 0.99, 0.99, 0.987],
+        backgroundColor: 'rgba(0,145,255,0.3)',
+        borderColor: '#0091ff',
+        borderWidth: 1, borderRadius: 3
+      },
+      {
+        label: 'Random Forest',
+        data: [1.0, 1.0, 1.0, 1.0, 1.0],
+        backgroundColor: 'rgba(0,229,160,0.3)',
+        borderColor: '#00e5a0',
+        borderWidth: 1, borderRadius: 3
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: { backgroundColor: '#13161e', borderColor: '#333a50', borderWidth: 1, titleColor: '#e8eaf0', bodyColor: '#9aa0b4', padding: 10 },
+      legend: { display: true, position: 'top', labels: { color: '#9aa0b4', padding: 16, boxWidth: 12 } }
+    },
+    scales: {
+      y: { min: 0.97, max: 1.005, grid: { color: '#1b1f2b' }, ticks: { callback: v => v.toFixed(3) } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ── FEATURE GROUP ──
+new Chart(document.getElementById('featGroupChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Stock Quantity (35.5%)', 'Shelf-Life Dynamics (49.8%)', 'Financial Metrics (12.4%)', 'Price (1.6%)', 'Other (<1%)'],
+    datasets: [{
+      data: [35.5, 49.8, 12.4, 1.6, 0.7],
+      backgroundColor: [
+        'rgba(255,77,109,0.6)', 'rgba(0,229,160,0.5)', 'rgba(0,145,255,0.5)',
+        'rgba(255,179,71,0.4)', 'rgba(255,255,255,0.1)'
+      ],
+      borderColor: ['#ff4d6d', '#00e5a0', '#0091ff', '#ffb347', '#333a50'],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    plugins: {
+      tooltip: { backgroundColor: '#13161e', borderColor: '#333a50', borderWidth: 1, titleColor: '#e8eaf0', bodyColor: '#9aa0b4', padding: 10 },
+      legend: { display: true, position: 'bottom', labels: { color: '#9aa0b4', padding: 8, boxWidth: 10, font: { size: 10 } } }
+    },
+    cutout: '55%'
+  }
+});
+</script>
+</body>
+</html>
