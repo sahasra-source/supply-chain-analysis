@@ -78,24 +78,30 @@ Risk is uniformly distributed across all three categories — no category requir
 ## Project Structure
 
 supply-chain-analysis/
-├── data/
-│   └── raw/                          # Source dataset (not tracked by git)
-│   └── processed/                    # Engineered features (not tracked by git)
-├── notebooks/
-│   ├── 01_eda.ipynb                  # Exploratory data analysis + KPI calculations + category table
-│   ├── 02_feature_engineering.ipynb  # 15 engineered features + risk
-│   ├── 03_modeling.ipynb             # Baseline LR + Random Forest + SHAP
-│   └── 04_results_export.ipynb       # JSON export for dashboard
-├── src/
-│   ├── features.py                   # Feature engineering pipeline
-│   ├── model.py                      # Training, evaluation, metrics
-│   └── risk_report.py                # Weekly risk flag generator
-├── outputs/
-│   └── dashboard_data.json           # Model outputs for dashboard
-├── reports/figures/                  # All saved chart PNGs
-├── supply_chain_dashboard.html       # Interactive decision report
-├── requirements.txt
-└── README.md
+- **data/**
+  - `raw/` - source data (gitignored)
+  - `processed/` - cleaned datasets
+
+- **notebooks/**
+  - `01_eda.ipynb` - exploration & KPIs
+  - `02_feature_engineering.ipynb` - feature creation
+  - `03_modeling.ipynb` - ML models & evaluation
+  - `04_results_export.ipynb` - dashboard output
+
+- **src/**
+  - `features.py` - feature pipeline
+  - `model.py` - training & metrics
+  - `risk_report.py` - risk logic
+
+- **outputs/**
+  - `dashboard_data.json`
+
+- **reports/figures/**
+  - saved charts
+
+- `supply_chain_dashboard.html`
+- `requirements.txt`
+- `README.md`
 
 ---
 
