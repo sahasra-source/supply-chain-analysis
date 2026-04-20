@@ -190,7 +190,7 @@ lightgbm>=4.0
 
 ## Interactive Dashboard
 
-Open `supply_chain_dashboard.html` in any browser for the full interactive decision report; includes all charts, model comparison, feature importance, and recommendations with financial impact estimates.
+Open `[supply_chain_dashboard.html](https://sahasra-source.github.io/supply-chain-analysis/#interactive-dashboard)` in any browser for the full interactive decision report; includes all charts, model comparison, feature importance, and recommendations with financial impact estimates.
 
 ---
 
