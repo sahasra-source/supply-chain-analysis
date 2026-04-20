@@ -2,70 +2,54 @@
   "kpis": {
     "total_skus": 10000,
     "avg_stock_qty": 50.6,
-    "dual_risk_count": 2530,
-    "capital_at_risk": 56718863.0,
-    "write_off_rate": 100.0
+    "dual_risk_count": 841,
+    "capital_at_risk": 56722607.0,
+    "write_off_rate": 33.2
   },
   "risk_breakdown": {
-    "Critical": 2530,
-    "High": 0,
-    "Medium": 7470,
-    "Low": 0
+    "Critical": 841,
+    "High": 842,
+    "Medium": 3326,
+    "Low": 4991
   },
   "model_logistic": {
-    "AUC-ROC": 1.0,
-    "Precision": 1.0,
-    "Recall": 1.0,
-    "F1-Score": 1.0,
-    "Accuracy": 1.0
+    "AUC-ROC": 0.9293,
+    "Precision": 0.7761,
+    "Recall": 0.7028,
+    "F1-Score": 0.7376,
+    "Accuracy": 0.8755
   },
   "model_rf": {
-    "AUC-ROC": 1.0,
-    "Precision": 1.0,
-    "Recall": 1.0,
-    "F1-Score": 1.0,
-    "Accuracy": 1.0
+    "AUC-ROC": 0.9998,
+    "Precision": 0.9959,
+    "Recall": 0.9859,
+    "F1-Score": 0.9909,
+    "Accuracy": 0.9955
   },
   "feature_importance": [
     {
-      "feature": "high_stock_flag",
-      "pct": 22.8
-    },
-    {
-      "feature": "Stock Quantity",
-      "pct": 21.3
-    },
-    {
-      "feature": "overhang_ratio",
-      "pct": 19.8
-    },
-    {
-      "feature": "risk_score",
-      "pct": 17.1
-    },
-    {
-      "feature": "stock_pressure",
-      "pct": 16.6
-    },
-    {
-      "feature": "financial_exposure",
-      "pct": 2.0
+      "feature": "shelf_life_days",
+      "pct": 38.1
     },
     {
       "feature": "Price",
-      "pct": 0.2
+      "pct": 29.2
     },
     {
-      "feature": "price_tier_enc",
-      "pct": 0.1
+      "feature": "Stock Quantity",
+      "pct": 22.6
+    },
+    {
+      "feature": "overhang_ratio",
+      "pct": 9.2
+    },
+    {
+      "feature": "category_enc",
+      "pct": 0.5
     },
     {
       "feature": "warranty_enc",
-      "pct": 0.0
-    },
-    {
-      "feature": "days_to_expiry",
-      "pct": 0.0
+      "pct": 0.4
     }
   ],
   "stock_distribution": {
@@ -76,8 +60,9 @@
     "91\u2013100": 998
   },
   "expiry_distribution": {
-    "3\u20136 months": 3363,
-    ">1 year expired": 6637
+    "0\u20136m expired": 3320,
+    "Expiring 1\u20132yr": 3317,
+    "Expiring >2yr": 3363
   },
   "price_by_category": {
     "Clothing": 251.79,

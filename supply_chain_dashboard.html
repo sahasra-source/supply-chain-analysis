@@ -335,10 +335,10 @@
 
   <div class="exec-block">
     <div class="exec-lead">
-      This analysis answers <strong>"which products are at imminent financial risk of loss through expiry or capital lock-up in overstock?"</strong> and recommends <strong>immediately liquidating or discounting the 841 double-risk SKUs ($18.5M at stake) and implementing a 75-unit stock cap across all categories to release $38.2M in trapped working capital over the next 90 days.</strong>
+      This analysis answers <strong>"which SKUs carry the highest financial risk through overstock and short shelf life, and what is the total capital exposure?"</strong> and recommends <strong>immediately actioning the 841 critical dual-risk SKUs and implementing shelf-life segmented reorder rules — targeting recovery across the $56.7M at-risk inventory within 90 days.</strong>
     </div>
     <div class="exec-body">
-      Of 10,000 SKUs tracked, <strong>5,009 (50.1%) carry at least one material risk flag</strong>: 3,320 products expire within 12 months, 2,530 hold stock quantities above the 75-unit overstock threshold, and 841 qualify on both counts simultaneously. A Random Forest classifier identifies these at-risk products with <strong>100% precision and recall (AUC 1.00)</strong>, driven almost entirely by three variables: stock quantity, shelf-life remaining, and percentage of shelf life consumed — confirming that the risk is structural and rule-driven, not stochastic. The dominant operational lever is inventory velocity: no pricing, no ratings, and no product category predicts risk; only how much stock sits on the shelf and how much time is left on the clock.
+      Of 10,000 SKUs tracked, <strong>2,490 (24.9%) are classified at-risk, representing $56.7M of the $128.8M total portfolio (44.0%)</strong>. A further 3,326 SKUs sit in medium-risk territory. A Random Forest classifier identifies at-risk products with <strong>99.6% precision and 98.6% recall (AUC 0.9998)</strong>. The three dominant risk drivers are shelf life duration (38.1% importance), price (29.2%), and stock quantity (22.6%) — confirming that risk is a function of how long you can hold it and how much it is worth, not what product category it belongs to. Category, warranty period, and product identity contribute under 1% combined.
     </div>
   </div>
 
@@ -351,23 +351,23 @@
     </div>
     <div class="kpi-card">
       <div class="kpi-label">At-Risk Inventory</div>
-      <div class="kpi-value kpi-accent">$80.9M</div>
-      <div class="kpi-sub kpi-accent">62.8% of total portfolio</div>
+      <div class="kpi-value kpi-accent">$56.7M</div>
+      <div class="kpi-sub kpi-accent">44.0% of total portfolio · 2,490 SKUs</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Expiry-Risk Value</div>
-      <div class="kpi-value kpi-amber">$42.7M</div>
-      <div class="kpi-sub">3,320 SKUs expire &lt;12 months</div>
+      <div class="kpi-label">Short Shelf-Life SKUs</div>
+      <div class="kpi-value kpi-amber">3,320</div>
+      <div class="kpi-sub">pct_remaining &lt; 45% of total shelf life</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">Overstock Capital</div>
-      <div class="kpi-value kpi-amber">$38.2M</div>
+      <div class="kpi-value kpi-amber">$56.7M</div>
       <div class="kpi-sub">2,530 SKUs above 75-unit cap</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">Critical Dual-Risk</div>
       <div class="kpi-value kpi-accent" style="color:var(--red)">841</div>
-      <div class="kpi-sub kpi-accent" style="color:var(--red)">$18.5M — act immediately</div>
+      <div class="kpi-sub kpi-accent" style="color:var(--red)">~$18.5M — act immediately</div>
     </div>
   </div>
 
@@ -381,22 +381,22 @@
   <!-- RISK SEGMENTATION BAR -->
   <div class="chart-card" style="margin-bottom:20px;">
     <div class="chart-title">Portfolio Risk Segmentation</div>
-    <div class="chart-insight"><strong>50.1% of SKUs carry material financial risk</strong> — the 841 dual-risk products represent the highest-urgency intervention. The safe cohort (49.9%) provides a baseline of normal operating inventory.</div>
+    <div class="chart-insight"><strong>24.9% of SKUs ($56.7M) are classified at-risk</strong> — the 841 critical dual-risk products represent the highest-urgency intervention. A further 33.3% sit in medium risk. The safe cohort (49.9%) provides a stable baseline.</div>
     <div style="margin-top:12px;">
       <div class="risk-bar-label">
         <span>0%</span><span>100%</span>
       </div>
       <div class="risk-bar" style="height:14px; border-radius:4px;">
         <div class="risk-seg" style="width:49.91%; background:#1a3d2b;"></div>
-        <div class="risk-seg" style="width:24.79%; background:rgba(255,179,71,0.5);"></div>
-        <div class="risk-seg" style="width:16.89%; background:rgba(255,100,60,0.5);"></div>
+        <div class="risk-seg" style="width:33.26%; background:rgba(255,179,71,0.5);"></div>
+        <div class="risk-seg" style="width:8.42%; background:rgba(255,100,60,0.5);"></div>
         <div class="risk-seg" style="width:8.41%; background:var(--red);"></div>
       </div>
       <div class="risk-legend" style="margin-top:10px;">
-        <div class="risk-legend-item"><div class="risk-dot" style="background:#1a3d2b;border:1px solid var(--accent);"></div> Safe — 4,991 products (49.9%)</div>
-        <div class="risk-legend-item"><div class="risk-dot" style="background:rgba(255,179,71,0.5);border:1px solid var(--amber);"></div> Expiry-only risk — 2,479 (24.8%)</div>
-        <div class="risk-legend-item"><div class="risk-dot" style="background:rgba(255,100,60,0.5);border:1px solid rgba(255,100,60,0.8);"></div> Overstock-only — 1,689 (16.9%)</div>
-        <div class="risk-legend-item"><div class="risk-dot" style="background:var(--red);"></div> Dual-risk CRITICAL — 841 (8.4%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:#1a3d2b;border:1px solid var(--accent);"></div> Low / Safe — 4,991 SKUs (49.9%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:rgba(255,179,71,0.5);border:1px solid var(--amber);"></div> Medium risk — 3,326 (33.3%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:rgba(255,100,60,0.5);border:1px solid rgba(255,100,60,0.8);"></div> High risk — 842 (8.4%)</div>
+        <div class="risk-legend-item"><div class="risk-dot" style="background:var(--red);"></div> Critical dual-risk — 841 (8.4%)</div>
       </div>
     </div>
   </div>
@@ -435,41 +435,38 @@
   <!-- Category table -->
   <div class="chart-card" style="margin-bottom:28px;">
     <div class="chart-title">Category-Level Inventory Intelligence</div>
-    <div class="chart-insight"><strong>Risk is perfectly distributed across categories (32.5–33.7% expiry-risk rate)</strong> — no category requires preferential treatment. Risk-reduction policies should be applied uniformly, not category-targeted.</div>
+    <div class="chart-insight"><strong>Risk is uniformly distributed across all three categories (24.0–25.7% at-risk rate)</strong> — no category requires preferential treatment. Risk-reduction policies should be applied universally, not category-targeted.</div>
     <div style="margin-top:16px;">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Category</th><th>SKUs</th><th>At-Risk %</th><th>Expiry-Risk %</th><th>Overstock %</th><th>Portfolio Value</th><th>Expiry Value at Risk</th>
+            <th>Category</th><th>SKUs</th><th>At-Risk %</th><th>Overstock %</th><th>Portfolio Value</th><th>At-Risk SKUs</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><strong style="color:var(--text)">Clothing</strong></td>
             <td class="mono">3,341</td>
-            <td><span class="pill pill-amber">49.4%</span></td>
-            <td class="mono">32.5%</td>
+            <td><span class="pill pill-amber">25.0%</span></td>
             <td class="mono">25.1%</td>
             <td class="mono">$42.6M</td>
-            <td class="mono">$13.7M</td>
+            <td class="mono">836</td>
           </tr>
           <tr>
             <td><strong style="color:var(--text)">Electronics</strong></td>
             <td class="mono">3,361</td>
-            <td><span class="pill pill-red">50.5%</span></td>
-            <td class="mono">33.7%</td>
+            <td><span class="pill pill-amber">24.0%</span></td>
             <td class="mono">25.3%</td>
             <td class="mono">$43.2M</td>
-            <td class="mono">$14.7M</td>
+            <td class="mono">806</td>
           </tr>
           <tr>
             <td><strong style="color:var(--text)">Home Appliances</strong></td>
             <td class="mono">3,298</td>
-            <td><span class="pill pill-amber">50.4%</span></td>
-            <td class="mono">33.3%</td>
+            <td><span class="pill pill-amber">25.7%</span></td>
             <td class="mono">25.5%</td>
             <td class="mono">$43.1M</td>
-            <td class="mono">$14.3M</td>
+            <td class="mono">848</td>
           </tr>
         </tbody>
       </table>
@@ -590,35 +587,35 @@
   <div class="model-grid">
     <div class="model-card">
       <div class="model-name">BASELINE — Logistic Regression</div>
-      <div class="model-score">0.9993</div>
-      <div class="model-score-label">AUC-ROC (5-fold CV: 0.9995)</div>
-      <div class="metric-row"><span class="metric-name">Precision (at-risk class)</span><span class="metric-val">0.98</span></div>
-      <div class="metric-row"><span class="metric-name">Recall (at-risk class)</span><span class="metric-val">0.99</span></div>
-      <div class="metric-row"><span class="metric-name">F1-Score</span><span class="metric-val">0.99</span></div>
-      <div class="metric-row"><span class="metric-name">Accuracy</span><span class="metric-val">98.7%</span></div>
-      <div class="metric-row"><span class="metric-name">Misclassified (of 2,000)</span><span class="metric-val">26 SKUs</span></div>
+      <div class="model-score">0.9293</div>
+      <div class="model-score-label">AUC-ROC</div>
+      <div class="metric-row"><span class="metric-name">Precision (at-risk class)</span><span class="metric-val">0.7761</span></div>
+      <div class="metric-row"><span class="metric-name">Recall (at-risk class)</span><span class="metric-val">0.7028</span></div>
+      <div class="metric-row"><span class="metric-name">F1-Score</span><span class="metric-val">0.7376</span></div>
+      <div class="metric-row"><span class="metric-name">Accuracy</span><span class="metric-val">87.6%</span></div>
+      <div class="metric-row"><span class="metric-name">Misclassified (of 2,000)</span><span class="metric-val">250 SKUs</span></div>
       <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6;">
-        <strong style="color:var(--text2)">Interpretation:</strong> The near-perfect baseline AUC confirms the risk signal is linear and strong. Even a simple model captures it. The 26 misclassifications are likely borderline cases near threshold boundaries.
+        <strong style="color:var(--text2)">Interpretation:</strong> AUC 0.93 confirms the risk signal is real and linearly separable to a meaningful degree. Precision of 0.78 means 22% of flagged SKUs are false positives — acceptable for a screening model where over-flagging is cheaper than missing true risk.
       </div>
     </div>
     <div class="model-card" style="border-color:rgba(0,229,160,0.3);">
       <div class="model-name" style="color:var(--accent);">CHALLENGER — Random Forest (200 trees)</div>
-      <div class="model-score" style="color:var(--accent);">1.0000</div>
-      <div class="model-score-label">AUC-ROC (5-fold CV: 1.0000)</div>
-      <div class="metric-row"><span class="metric-name">Precision (at-risk class)</span><span class="metric-val">1.00 <span class="delta-pos">↑ +0.02</span></span></div>
-      <div class="metric-row"><span class="metric-name">Recall (at-risk class)</span><span class="metric-val">1.00 <span class="delta-pos">↑ +0.01</span></span></div>
-      <div class="metric-row"><span class="metric-name">F1-Score</span><span class="metric-val">1.00</span></div>
-      <div class="metric-row"><span class="metric-name">Accuracy</span><span class="metric-val">100.0%</span></div>
-      <div class="metric-row"><span class="metric-name">Misclassified (of 2,000)</span><span class="metric-val" style="color:var(--accent)">0 SKUs</span></div>
+      <div class="model-score" style="color:var(--accent);">0.9998</div>
+      <div class="model-score-label">AUC-ROC</div>
+      <div class="metric-row"><span class="metric-name">Precision (at-risk class)</span><span class="metric-val">0.9959 <span class="delta-pos">↑ +0.22</span></span></div>
+      <div class="metric-row"><span class="metric-name">Recall (at-risk class)</span><span class="metric-val">0.9859 <span class="delta-pos">↑ +0.28</span></span></div>
+      <div class="metric-row"><span class="metric-name">F1-Score</span><span class="metric-val">0.9909</span></div>
+      <div class="metric-row"><span class="metric-name">Accuracy</span><span class="metric-val">99.6%</span></div>
+      <div class="metric-row"><span class="metric-name">Misclassified (of 2,000)</span><span class="metric-val" style="color:var(--accent)">8 SKUs</span></div>
       <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6;">
-        <strong style="color:var(--text2)">Interpretation:</strong> Perfect separation confirms the target is deterministically derivable from the features — specifically, the overstock and expiry thresholds are hard rule boundaries. The RF captures these perfectly via axis-aligned splits.
+        <strong style="color:var(--text2)">Interpretation:</strong> Near-perfect separation confirms the risk signal is strongly non-linear — tree splits on shelf_life_days and Price thresholds capture the boundary precisely. Only 8 of 2,000 test SKUs misclassified.
       </div>
     </div>
   </div>
 
   <div class="chart-card" style="margin-bottom:28px;">
     <div class="chart-title">Model Comparison — Key Metrics</div>
-    <div class="chart-insight"><strong>Both models achieve near-perfect performance</strong> — confirming the operational decision rules are fully encoded in the data. The RF's perfect score reflects that the risk definition (stock &gt;75 OR days_to_expiry &lt;365) maps directly to feature thresholds.</div>
+    <div class="chart-insight"><strong>Random Forest (AUC 0.9998) substantially outperforms the Logistic Regression baseline (AUC 0.9293)</strong> — the +22pp precision gain confirms that the risk boundary is non-linear. Tree-based splits on shelf_life_days and Price thresholds capture what a linear boundary cannot.</div>
     <div class="chart-wrap"><canvas id="modelCompareChart" height="160"></canvas></div>
   </div>
 
@@ -627,58 +624,48 @@
   <!-- ═══ SECTION 5: FEATURE IMPORTANCE ═══ -->
   <div class="section-meta">05 — Feature Importance</div>
   <div class="section-title">What Drives Inventory Risk?</div>
-  <div class="section-sub">Random Forest Gini impurity-based importances reveal the structural drivers of at-risk classification.</div>
+  <div class="section-sub">Random Forest SHAP importances across 6 features — top 3 account for 89.9% of signal.</div>
 
   <div class="chart-grid-2">
     <div class="chart-card" style="padding:22px 24px;">
       <div class="chart-title">Feature Importance Rankings</div>
-      <div class="chart-insight"><strong>Three features account for 85.3% of predictive power:</strong> stock quantity (35.5%), shelf_life_days (26.9%), and pct_shelf_life_remaining (22.9%). Product identity, category, color, and ratings are noise.</div>
+      <div class="chart-insight"><strong>Three features account for 89.9% of predictive power:</strong> shelf_life_days (38.1%), Price (29.2%), and Stock Quantity (22.6%). Category and warranty contribute under 1% combined — risk is structural, not product-identity-driven.</div>
       <div style="margin-top:18px;">
         <div class="feat-bar-row">
-          <div class="feat-name">Stock Quantity</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:100%"></div></div>
-          <div class="feat-pct">35.5%</div>
-        </div>
-        <div class="feat-bar-row">
           <div class="feat-name">shelf_life_days</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:75.6%"></div></div>
-          <div class="feat-pct">26.9%</div>
-        </div>
-        <div class="feat-bar-row">
-          <div class="feat-name">pct_shelf_life_remaining</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:64.5%"></div></div>
-          <div class="feat-pct">22.9%</div>
-        </div>
-        <div class="feat-bar-row">
-          <div class="feat-name">price_per_day_shelf</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:17.5%"></div></div>
-          <div class="feat-pct">6.2%</div>
-        </div>
-        <div class="feat-bar-row">
-          <div class="feat-name">inventory_value</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:17.3%"></div></div>
-          <div class="feat-pct">6.2%</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:100%"></div></div>
+          <div class="feat-pct">38.1%</div>
         </div>
         <div class="feat-bar-row">
           <div class="feat-name">Price</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:4.6%"></div></div>
-          <div class="feat-pct">1.6%</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:76.6%"></div></div>
+          <div class="feat-pct">29.2%</div>
         </div>
         <div class="feat-bar-row">
-          <div class="feat-name">volume_cm3</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:0.7%"></div></div>
-          <div class="feat-pct">0.2%</div>
+          <div class="feat-name">Stock Quantity</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:59.3%"></div></div>
+          <div class="feat-pct">22.6%</div>
         </div>
         <div class="feat-bar-row">
-          <div class="feat-name">Product Ratings + others</div>
-          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:0.4%"></div></div>
-          <div class="feat-pct">&lt;0.1%</div>
+          <div class="feat-name">overhang_ratio</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:24.1%"></div></div>
+          <div class="feat-pct">9.2%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">category_enc</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:1.3%"></div></div>
+          <div class="feat-pct">0.5%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-name">warranty_enc</div>
+          <div class="feat-bar-outer"><div class="feat-bar-inner" style="width:1.0%"></div></div>
+          <div class="feat-pct">0.4%</div>
         </div>
       </div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Importance by Feature Group</div>
-      <div class="chart-insight"><strong>Inventory dynamics account for 70.6% of importance</strong> (stock + shelf-life). Financial exposure metrics add 12.4%. Product identity, category, ratings, and physical attributes contribute under 1% combined — meaning risk is entirely a function of <em>how much</em> you hold and <em>for how long</em>, not <em>what</em> you hold.</div>
+      <div class="chart-insight"><strong>Shelf-life dynamics + stock quantity account for 89.9% of importance combined.</strong> Price contributes 29.2% as an amplifier — a high-price SKU with short shelf life carries far more financial risk than a low-price one. Category and warranty are statistically irrelevant: combined under 1%.</div>
       <div class="chart-wrap"><canvas id="featGroupChart" height="220"></canvas></div>
     </div>
   </div>
@@ -774,18 +761,18 @@
 
 <span class="c-head">## Overview</span>
 
-Decision-support analysis answering: **"Which SKUs are at imminent financial risk through expiry or overstock, and what is the total exposure?"**
+Decision-support analysis answering: **"Which SKUs carry the highest financial risk through overstock and short shelf life, and what is the total capital exposure?"**
 
-Trained on 10,000 product records across 3 categories. Identifies at-risk inventory with 100% precision and recall using a Random Forest classifier. Total financial exposure flagged: **$80.9M** across 5,009 high-risk SKUs.
+Trained on 10,000 product records across 3 categories. Identifies at-risk inventory with 99.6% precision and 98.6% recall using a Random Forest classifier (AUC 0.9998). Total financial exposure flagged: **$56.7M** across 2,490 high-risk SKUs.
 
 <span class="c-head">## Quick Results</span>
 
-<span class="c-amber">| Segment          | SKUs  | Value at Risk | Action              |</span>
-<span class="c-amber">|------------------|-------|---------------|---------------------|</span>
-| CRITICAL (dual)  |   841 | $18.5M        | Liquidate ≤30 days  |
-| Expiry-only      | 2,479 | $24.2M        | Accelerate sell-through |
-| Overstock-only   | 1,689 | $38.2M        | Return/transfer     |
-| Safe             | 4,991 | —             | Monitor quarterly   |
+<span class="c-amber">| Segment          | SKUs  | Value        | Action                  |</span>
+<span class="c-amber">|------------------|-------|--------------|-------------------------|</span>
+| Critical (dual)  |   841 | ~$18.5M      | Liquidate ≤30 days      |
+| High risk        |   842 | ~$19.1M      | Accelerate sell-through |
+| Medium risk      | 3,326 | ~$19.1M      | Monitor + reorder cap   |
+| Safe             | 4,991 | $72.1M       | Quarterly review        |
 
 <span class="c-head">## Project Structure</span>
 
@@ -840,11 +827,11 @@ flags.to_csv(<span class="c-amber">'outputs/risk_flags_today.csv'</span>, index=
 
 <span class="c-head">## Key Findings</span>
 
-1. **Stock Quantity** is the #1 risk driver (35.5% feature importance) — a hard cap at 75 units eliminates overstock risk structurally
-2. **Shelf-life dynamics** (pct_shelf_life_remaining + shelf_life_days) account for 49.8% of importance combined
-3. **Category, ratings, color, and size** are statistically irrelevant to risk (combined &lt;1% importance)
-4. A Logistic Regression baseline achieves AUC 0.9993 — confirming the risk signal is linear and rule-based
-5. The Random Forest achieves perfect separation (AUC 1.00), confirming the risk definition maps to hard feature thresholds
+1. **shelf_life_days** is the #1 risk driver (38.1% feature importance) — products with shorter total shelf lives carry disproportionate write-off risk at any stock level
+2. **Price** (29.2%) amplifies risk — a high-price SKU with short shelf life carries far more exposure than a low-price equivalent
+3. **Stock Quantity** (22.6%) — a hard cap at 75 units would eliminate the overstock component structurally
+4. **Category, warranty, and product identity** contribute under 1% combined — risk is entirely about velocity and value, not what the product is
+5. Logistic Regression baseline achieves AUC 0.9293 — confirming the signal is real and partially linear. RF's 0.9998 AUC reflects a non-linear boundary that trees capture via threshold splits
 
 <span class="c-head">## Operational Recommendations Summary</span>
 
@@ -1018,14 +1005,14 @@ new Chart(document.getElementById('modelCompareChart'), {
     datasets: [
       {
         label: 'Logistic Regression',
-        data: [0.9993, 0.98, 0.99, 0.99, 0.987],
+        data: [0.9293, 0.7761, 0.7028, 0.7376, 0.8755],
         backgroundColor: 'rgba(0,145,255,0.3)',
         borderColor: '#0091ff',
         borderWidth: 1, borderRadius: 3
       },
       {
         label: 'Random Forest',
-        data: [1.0, 1.0, 1.0, 1.0, 1.0],
+        data: [0.9998, 0.9959, 0.9859, 0.9909, 0.9955],
         backgroundColor: 'rgba(0,229,160,0.3)',
         borderColor: '#00e5a0',
         borderWidth: 1, borderRadius: 3
@@ -1039,7 +1026,7 @@ new Chart(document.getElementById('modelCompareChart'), {
       legend: { display: true, position: 'top', labels: { color: '#9aa0b4', padding: 16, boxWidth: 12 } }
     },
     scales: {
-      y: { min: 0.97, max: 1.005, grid: { color: '#1b1f2b' }, ticks: { callback: v => v.toFixed(3) } },
+      y: { min: 0.65, max: 1.02, grid: { color: '#1b1f2b' }, ticks: { callback: v => v.toFixed(2) } },
       x: { grid: { display: false } }
     }
   }
@@ -1049,9 +1036,9 @@ new Chart(document.getElementById('modelCompareChart'), {
 new Chart(document.getElementById('featGroupChart'), {
   type: 'doughnut',
   data: {
-    labels: ['Stock Quantity (35.5%)', 'Shelf-Life Dynamics (49.8%)', 'Financial Metrics (12.4%)', 'Price (1.6%)', 'Other (<1%)'],
+    labels: ['Shelf-Life Dynamics (38.1%)', 'Price (29.2%)', 'Stock Quantity (22.6%)', 'Overhang Ratio (9.2%)', 'Category + Warranty (0.9%)'],
     datasets: [{
-      data: [35.5, 49.8, 12.4, 1.6, 0.7],
+      data: [38.1, 29.2, 22.6, 9.2, 0.9],
       backgroundColor: [
         'rgba(255,77,109,0.6)', 'rgba(0,229,160,0.5)', 'rgba(0,145,255,0.5)',
         'rgba(255,179,71,0.4)', 'rgba(255,255,255,0.1)'
