@@ -36,7 +36,7 @@ The strong baseline (AUC 0.93) confirms the risk signal is real and learnable fr
 
 ---
 
-## Feature Importance (Random Forest — SHAP)
+## Feature Importance (Random Forest SHAP)
 
 | Rank | Feature | Importance |
 |---|---|---|
