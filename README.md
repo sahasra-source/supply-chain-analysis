@@ -6,7 +6,7 @@
 
 ## Overview
 
-This analysis answers **"which SKUs are at imminent financial risk through expiry or overstock, and what is the total capital exposure?"** and recommends **immediately liquidating the 841 dual-risk SKUs and implementing a 75-unit stock cap across all categories — releasing an estimated $38.2M in trapped working capital within 90 days.**
+This analysis answers **"which SKUs are at imminent financial risk through expiry or overstock, and what is the total capital exposure?"** and recommends **immediately liquidating the 841 dual-risk SKUs and implementing a 75-unit stock cap across all categories, releasing an estimated $38.2M in trapped working capital within 90 days.**
 
 Trained on 10,000 product records across 3 categories. A Random Forest classifier identifies at-risk inventory with 100% precision and recall (AUC 1.00). Total financial exposure flagged: **$80.9M** across 5,009 high-risk SKUs.
 
@@ -32,7 +32,7 @@ Trained on 10,000 product records across 3 categories. A Random Forest classifie
 | Logistic Regression (baseline) | 0.9293 | 0.7761 | 0.7028 | 0.7376 | 87.6% |
 | Random Forest (200 trees) | **0.9998** | **0.9959** | **0.9859** | **0.9909** | **99.6%** |
 
-The strong baseline (AUC 0.93) confirms the risk signal is real and learnable from raw features. The Random Forest's near-perfect performance reflects that inventory risk in this dataset is structurally driven by three hard signals — shelf life, price, and stock quantity — which tree-based models capture via axis-aligned splits.
+The strong baseline (AUC 0.93) confirms the risk signal is real and learnable from raw features. The Random Forest's near-perfect performance reflects that inventory risk in this dataset is structurally driven by three hard signals - shelf life, price, and stock quantity which tree-based models capture via axis-aligned splits.
 
 ---
 
@@ -47,7 +47,7 @@ The strong baseline (AUC 0.93) confirms the risk signal is real and learnable fr
 | 5 | category_enc | 0.5% |
 | 6 | warranty_enc | 0.4% |
 
-**Key insight:** Shelf life duration and price together account for 67.3% of predictive power. Category, warranty period, and product identity contribute under 1% combined — risk is entirely a function of *how long* you can hold it and *how much it's worth*, not *what it is*.
+**Key insight:** Shelf life duration and price together account for 67.3% of predictive power. Category, warranty period, and product identity contribute under 1% combined; risk is entirely a function of *how long* you can hold it and *how much it's worth*, not *what it is*.
 
 ---
 
@@ -59,7 +59,7 @@ The strong baseline (AUC 0.93) confirms the risk signal is real and learnable fr
 | Electronics | 3,361 | $43.2M | 24.0% | 25.3% |
 | Home Appliances | 3,298 | $43.1M | 25.7% | 25.5% |
 
-Risk is uniformly distributed across all three categories — no category requires preferential treatment. Policies should be applied universally, not category-targeted.
+Risk is uniformly distributed across all three categories, no category requires preferential treatment. Policies should be applied universally, not category-targeted.
 
 ---
 
@@ -67,7 +67,7 @@ Risk is uniformly distributed across all three categories — no category requir
 
 | # | Action | Timeline | Est. Value |
 |---|---|---|---|
-| 1 | Liquidate 841 critical SKUs at 20–50% discount | 30 days | ~$11.1M recovered |
+| 1 | Liquidate 841 critical SKUs at 20-50% discount | 30 days | ~$11.1M recovered |
 | 2 | Implement 75-unit stock cap in ERP/WMS | 45 days | $56.7M exposure reduced |
 | 3 | Shelf-life segmented reorder rules (≤365d shelf → 20 unit max) | 60 days | 40% fewer write-offs |
 | 4 | Weekly automated risk dashboard (stock>75 OR pct_remaining<0.45) | 3 days | Continuous monitoring |
@@ -145,6 +145,7 @@ flags.to_csv('outputs/risk_flags_today.csv', index=False)
 ---
 
 ## Requirements
+```
 pandas>=2.0
 numpy>=1.24
 scikit-learn>=1.3
@@ -152,16 +153,17 @@ matplotlib>=3.7
 seaborn>=0.12
 shap>=0.42
 lightgbm>=4.0
+```
 
 ---
 
 ## Key Findings
 
-1. **shelf_life_days** is the #1 risk driver (38.1% feature importance) — products with shorter total shelf lives carry disproportionate write-off risk at any stock level
-2. **Price** (29.2%) amplifies risk — a high-price SKU with short shelf life carries far more exposure than a low-price equivalent
-3. **Stock Quantity** (22.6%) — a hard cap at 75 units would eliminate the overstock component structurally
-4. **Category, warranty, and product identity** contribute under 1% combined — risk is entirely about velocity and value, not what the product is
-5. Logistic Regression baseline achieves AUC 0.9293 — confirming the signal is real and partially linear. RF's 0.9998 AUC reflects a non-linear boundary that trees capture via threshold splits
+1. **shelf_life_days** is the #1 risk driver (38.1% feature importance) : products with shorter total shelf lives carry disproportionate write-off risk at any stock level
+2. **Price** (29.2%) amplifies risk : a high-price SKU with short shelf life carries far more exposure than a low-price equivalent
+3. **Stock Quantity** (22.6%) : a hard cap at 75 units would eliminate the overstock component structurally
+4. **Category, warranty, and product identity** contribute under 1% combined : risk is entirely about velocity and value, not what the product is
+5. Logistic Regression baseline achieves AUC 0.9293 : confirming the signal is real and partially linear. RF's 0.9998 AUC reflects a non-linear boundary that trees capture via threshold splits
 
 ---
 
@@ -188,22 +190,22 @@ lightgbm>=4.0
 
 ## Interactive Dashboard
 
-Open `supply_chain_dashboard.html` in any browser for the full interactive decision report — includes all charts, model comparison, feature importance, and recommendations with financial impact estimates.
+Open `supply_chain_dashboard.html` in any browser for the full interactive decision report; includes all charts, model comparison, feature importance, and recommendations with financial impact estimates.
 
 ---
 
 ## Limitations
 
-- Dataset is synthetic (10,000 SKUs, uniform distributions) — real inventory data would show demand clustering, seasonal patterns, and supplier variance not present here
+- Dataset is synthetic (10,000 SKUs, uniform distributions); real inventory data would show demand clustering, seasonal patterns, and supplier variance not present here
 - `days_to_expiry` contains only 3 distinct values (0, 366, 731) reflecting a 1-year/2-year shelf-life classification rather than continuous expiry tracking; `shelf_life_days` (continuous, range 155–1096) is used instead as the expiry signal
-- Near-perfect RF scores reflect that inventory risk in this dataset maps to hard threshold boundaries — in production, a continuous WMS feed would produce more nuanced separation
-- Does not model demand velocity — a SKU with 80 units but high daily sell-through is not truly at risk
+- Near-perfect RF scores reflect that inventory risk in this dataset maps to hard threshold boundaries in production, a continuous WMS feed would produce more nuanced separation
+- Does not model demand velocity, a SKU with 80 units but high daily sell-through is not truly at risk
 
 ---
 
 ## License
 
-MIT — free to use with attribution.
+MIT
 
 ---
 
